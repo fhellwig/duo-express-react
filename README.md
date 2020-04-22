@@ -12,7 +12,7 @@ This module works with the [duo-express](https://www.npmjs.com/package/duo-expre
 npm install --save duo-express-react
 ```
 
-## The DuoAuthProvider
+## DuoAuthProvider
 
 In your top-level App.js (or equivalent):
 
@@ -30,9 +30,9 @@ The `DuoAuthProvider` accepts the following properties:
 
 - `checkInterval` {number (milliseconds)}: If specified, periodically performs a `GET` request to the `duo-express` middleware so the user is not signed out if they remain on the page. This will only work if the `rolling` session property is set to `true`. There is no default value.
 
-## The DuoAuthContext
+## DuoAuthContext
 
-In your JSX files, you can use the context provided by the `DuoAuthProvider` by calling the `useDuoAuth()` function.
+In your JSX files, you can use the `DuoAuthContext` provided by the `DuoAuthProvider` by calling the `useDuoAuth()` function.
 
 ```javascript
 import { useDuoAuth } from 'duo-express-react';
@@ -51,6 +51,26 @@ The `useDuoAuth()` function returns an object having the following properties:
 - `login`: A function taking one parameter, the username. This will perform the required Duo interactions and redirect to the value of the `redirectURI` specified in the `DuoAuthProvider`.
 
 - `logout`: A function that deletes the `duo` session object using the `duo-express` middleware and sets the `username` property in the state to `null`.
+
+## DuoAuthLogin
+
+Add the `DuoAuthLogin` component to your login page. Duo will create an iFrame in this component after you call the `auth.login(username)` function.
+
+```javascript
+import { DuoAuthLogin } from 'duo-express-react';
+
+function Login() {
+  return (
+    <div>
+      <h1>Login</h1>
+      <LoginForm/>
+      <DuoAuthLogin/>
+    </div>
+  );
+}
+```
+
+This is a contrived example. In reality, the `LoginForm` is a form you must create to get the user's username that is passed to the `auth.login(username)` function. The various `useState` and other related form constructs are not shown in this example.
 
 ## License
 

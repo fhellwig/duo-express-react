@@ -1,10 +1,10 @@
 {
   "name": "duo-express-react",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A React context to work with the duo-express package",
-  "main": "./dist/DuoAuth.js",
+  "main": "./lib/DuoAuth.js",
   "scripts": {
-    "build": "babel ./lib/DuoAuth.js -o ./dist/DuoAuth.js",
+    "build": "babel ./src/DuoAuth.js -o ./lib/DuoAuth.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
