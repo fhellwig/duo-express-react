@@ -61,7 +61,7 @@ function reducer(state, action) {
 //------------------------------------------------------------------------------
 
 export function DuoAuthProvider({ duoEndpoint, redirectUri, checkInterval, children }) {
-  const [state, dispatch] = useReducer(reducer, { username: null });
+  const [state, dispatch] = useReducer(reducer, { username: undefined });
   const duoRequest = apiRequest.bind(null, duoEndpoint || DUO_ENDPOINT);
 
   async function login(username) {

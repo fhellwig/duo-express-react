@@ -18,8 +18,11 @@ In your top-level App.js (or equivalent):
 
 ```javascript
 import { DuoAuthProvider } from 'duo-express-react';
+const TEN_MINUTES = 600000;
 
-<DuoAuthProvider>...</DuoAuthProvider>;
+<DuoAuthProvider redirectUri="/home" checkInterval={TEN_MINUTES}>
+  <AppContent />
+</DuoAuthProvider>;
 ```
 
 The `DuoAuthProvider` accepts the following properties:
@@ -29,6 +32,8 @@ The `DuoAuthProvider` accepts the following properties:
 - `redirectUri` {string (path)}: Where to go after successful authentication. You should specify this as described in the `duo-express` documentation. There is no default value.
 
 - `checkInterval` {number (milliseconds)}: If specified, periodically performs a `GET` request to the `duo-express` middleware so the user is not signed out if they remain on the page. This will only work if the `rolling` session property is set to `true`. There is no default value.
+
+Note: The provider always performs an intial `GET` request to determine if the user is signed in or not regardless of the `checkInterval` property.
 
 ## DuoAuthContext
 
@@ -46,9 +51,9 @@ function MyComponent() {
 
 The `useDuoAuth()` function returns an object having the following properties:
 
-- `state`: The `duo` session object from the `duo-express` middleware. It has only one property: the `username` (which can be null if the user is not signed in).
+- `state`: An object having one property, the `username`. Initially, this is `undefined` until the `DuoAuthProvider` receives a response to the initial `GET` request. After that, the username is either `null` (user authentication required) or a string (user is signed in).
 
-- `login`: A function taking one parameter, the username. This will perform the required Duo interactions and redirect to the value of the `redirectURI` specified in the `DuoAuthProvider`.
+- `login`: A function taking one parameter, the username. This will perform the required Duo interactions and redirect to the value of the `redirectUri` parameter of the `DuoAuthProvider`.
 
 - `logout`: A function that deletes the `duo` session object using the `duo-express` middleware and sets the `username` property in the state to `null`.
 
@@ -63,8 +68,8 @@ function Login() {
   return (
     <div>
       <h1>Login</h1>
-      <LoginForm/>
-      <DuoAuthLogin/>
+      <LoginForm />
+      <DuoAuthLogin />
     </div>
   );
 }
