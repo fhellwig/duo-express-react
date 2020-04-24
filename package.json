@@ -1,6 +1,6 @@
 {
   "name": "duo-express-react",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A React context to work with the duo-express package",
   "main": "./lib/DuoAuth.js",
   "scripts": {

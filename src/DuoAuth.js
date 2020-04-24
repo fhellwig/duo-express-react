@@ -64,27 +64,46 @@ export function DuoAuthProvider({ duoEndpoint, redirectUri, checkInterval, child
   const [state, dispatch] = useReducer(reducer, { username: undefined });
   const duoRequest = apiRequest.bind(null, duoEndpoint || DUO_ENDPOINT);
 
-  async function login(username) {
-    const data = await duoRequest('POST', {
+  function login(username) {
+    return duoRequest('POST', {
       username: username,
       redirect: redirectUri || null
-    });
-    if (data) {
-      Duo.init(data);
-    }
+    })
+      .then((options) => {
+        Duo.init(options);
+        return true;
+      })
+      .catch((err) => {
+        console.error(err);
+        return false;
+      });
   }
 
-  async function logout() {
-    await duoRequest('DELETE');
-    dispatch({ type: actionTypes.SET_USERNAME, payload: null });
+  function logout() {
+    return duoRequest('DELETE')
+      .then(() => {
+        dispatch({ type: actionTypes.SET_USERNAME, payload: null });
+        return true;
+      })
+      .catch((err) => {
+        console.error(err);
+        return false;
+      });
   }
 
-  async function check() {
-    const data = await duoRequest('GET');
-    const username = data ? data.username : null;
-    if (state.username !== username) {
-      dispatch({ type: actionTypes.SET_USERNAME, payload: username });
-    }
+  function check() {
+    return duoRequest('GET')
+      .then((data) => {
+        const username = data ? data.username : null;
+        if (state.username !== username) {
+          dispatch({ type: actionTypes.SET_USERNAME, payload: username });
+        }
+        return true;
+      })
+      .catch((err) => {
+        console.error(err);
+        return false;
+      });
   }
 
   useEffect(() => {
@@ -121,7 +140,7 @@ export function DuoAuthLogin() {
  *
  * @returns The response data or null on error.
  */
-async function apiRequest(path, method, data) {
+function apiRequest(path, method, data) {
   const config = {
     method: method,
     url: path,
@@ -130,17 +149,14 @@ async function apiRequest(path, method, data) {
     headers: { Pragma: 'no-cache' },
     data: data
   };
-  try {
-    const response = await axios(config);
-    return response.data;
-  } catch (err) {
-    if (err.response && err.response.message) {
-      console.error(err.response.message);
-    } else {
-      console.error(err.message);
-    }
-    return null;
-  }
+  return axios(config)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((err) => {
+      const msg = (err.response && err.response.message) || err.message;
+      throw new Error(msg);
+    });
 }
 
 /**

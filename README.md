@@ -77,6 +77,10 @@ function Login() {
 
 This is a contrived example. In reality, the `LoginForm` is a form you must create to get the user's username that is passed to the `auth.login(username)` function. The various `useState` and other related form constructs are not shown in this example.
 
+## Development
+
+The `DuoAuth.js` source code is in the `src` directory. Executing `npm run build` will run this file through `babel` and put the output into the `lib` directory where it is checked in as part of the distribution.
+
 ## License
 
 MIT License
