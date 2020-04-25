@@ -68,42 +68,27 @@ export function DuoAuthProvider({ duoEndpoint, redirectUri, checkInterval, child
     return duoRequest('POST', {
       username: username,
       redirect: redirectUri || null
-    })
-      .then((options) => {
-        Duo.init(options);
-        return true;
-      })
-      .catch((err) => {
-        console.error(err);
-        return false;
-      });
+    }).then((options) => {
+      Duo.init(options);
+      return true;
+    });
   }
 
   function logout() {
-    return duoRequest('DELETE')
-      .then(() => {
-        dispatch({ type: actionTypes.SET_USERNAME, payload: null });
-        return true;
-      })
-      .catch((err) => {
-        console.error(err);
-        return false;
-      });
+    return duoRequest('DELETE').then(() => {
+      dispatch({ type: actionTypes.SET_USERNAME, payload: null });
+      return true;
+    });
   }
 
   function check() {
-    return duoRequest('GET')
-      .then((data) => {
-        const username = data ? data.username : null;
-        if (state.username !== username) {
-          dispatch({ type: actionTypes.SET_USERNAME, payload: username });
-        }
-        return true;
-      })
-      .catch((err) => {
-        console.error(err);
-        return false;
-      });
+    return duoRequest('GET').then((data) => {
+      const username = data ? data.username : null;
+      if (state.username !== username) {
+        dispatch({ type: actionTypes.SET_USERNAME, payload: username });
+      }
+      return true;
+    });
   }
 
   useEffect(() => {
@@ -154,8 +139,8 @@ function apiRequest(path, method, data) {
       return response.data;
     })
     .catch((err) => {
-      const msg = (err.response && err.response.message) || err.message;
-      throw new Error(msg);
+      const msg = (err.response && err.response.data && err.response.data.message) || err.message;
+      return Promise.reject(new Error(msg));
     });
 }
 

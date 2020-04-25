@@ -53,7 +53,7 @@ The `useDuoAuth()` function returns an object having the following properties:
 
 - `state`: An object having one property, the `username`. Initially, this is `undefined` until the `DuoAuthProvider` receives a response to the initial `GET` request. After that, the username is either `null` (user authentication required) or a string (user is signed in).
 
-- `login`: A function taking one parameter, the username. This will perform the required Duo interactions and redirect to the value of the `redirectUri` parameter of the `DuoAuthProvider`.
+- `login`: A function taking one parameter, the username. This will perform the required Duo interactions and redirect to the value of the `redirectUri` parameter of the `DuoAuthProvider`. This function performs a [preauthorization](https://duo.com/docs/authapi#/preauth) of the user and will throw an exception if the user is denied access. The error message will indicate the reason.
 
 - `logout`: A function that deletes the `duo` session object using the `duo-express` middleware and sets the `username` property in the state to `null`.
 
