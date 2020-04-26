@@ -62,10 +62,11 @@ function reducer(state, action) {
 
 export function DuoAuthProvider({ duoEndpoint, redirectUri, checkInterval, children }) {
   const [state, dispatch] = useReducer(reducer, { username: undefined });
-  const duoRequest = apiRequest.bind(null, duoEndpoint || DUO_ENDPOINT);
+  duoEndpoint = duoEndpoint || DUO_ENDPOINT;
 
-  function login(username) {
-    return duoRequest('POST', {
+  function login(username, nopreauth) {
+    const url = nopreauth ? duoEndpoint + '?nopreauth' : duoEndpoint;
+    return apiRequest('POST', url, {
       username: username,
       redirect: redirectUri || null
     }).then((options) => {
@@ -75,14 +76,14 @@ export function DuoAuthProvider({ duoEndpoint, redirectUri, checkInterval, child
   }
 
   function logout() {
-    return duoRequest('DELETE').then(() => {
+    return apiRequest('DELETE', duoEndpoint).then(() => {
       dispatch({ type: actionTypes.SET_USERNAME, payload: null });
       return true;
     });
   }
 
   function check() {
-    return duoRequest('GET').then((data) => {
+    return apiRequest('GET', duoEndpoint).then((data) => {
       const username = data ? data.username : null;
       if (state.username !== username) {
         dispatch({ type: actionTypes.SET_USERNAME, payload: username });
@@ -116,19 +117,18 @@ export function DuoAuthLogin() {
 //------------------------------------------------------------------------------
 
 /**
- * A generic API request. The path is the first parameter so it can be bound
- * to a specific path. On error, the error is logged and null is returned.
+ * A generic API request.
  *
- * @param {string} path - the endpoint path
  * @param {string} method - the HTTP method
+ * @param {string} url - the endpoint URL
  * @param {string} data - the data to send in a post
  *
  * @returns The response data or null on error.
  */
-function apiRequest(path, method, data) {
+function apiRequest(method, url, data) {
   const config = {
     method: method,
-    url: path,
+    url: url,
     responseType: 'json',
     withCredentials: true,
     headers: { Pragma: 'no-cache' },
